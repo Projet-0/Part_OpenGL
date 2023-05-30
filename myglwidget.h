@@ -42,6 +42,8 @@ private:
     float camera_value_z=30;
     float target_value_z=0;
 
+    int score=0;
+
 
 
 };

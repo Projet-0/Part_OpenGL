@@ -103,6 +103,11 @@ void MyGLWidget::paintGL()
                       0.0, 1.0, 0.0); // Vecteur d'orientation de la caméra (x, y, z)
 
 
+    //Etat choisi par le jeu
+    int game_state = 2 ;
+
+    // Etat de la main  donnée à récupérer via opencv
+    int real_state = 5;
 
     // on rapproche le mur plutôt ce sera plus simple, avancement du mur
     if (camera_value_z < 5) {
@@ -113,6 +118,13 @@ void MyGLWidget::paintGL()
 
     else{ // c'est a cet endroit qu'on doit réinitialiser la matrice du mur
         camera_value_z = -30 ;
+
+
+        // On modifie additionne le score
+        if(real_state == game_state) {
+            score+=1;
+            qDebug() << "on incrémente le score" << score ;
+        }
     }
 
     //Déclaration de la matrice du mur
@@ -130,14 +142,13 @@ void MyGLWidget::paintGL()
 
 
 
-
     // Tracé du mur
     cube C(0,0,0,0.1);
 
     // Attention j'ai moins de cube que ce que je pense
 
-    for (float i= -0.5 ; i<0.5 ; i+=0.1){
-        for(float j = -0.5; j<0.5 ; j+=0.1 ){
+    for (float i= -0.5 ; i<0.5 ; i+=0.01){
+        for(float j = -0.5; j<0.5 ; j+=0.01 ){
 
             //int position_i = ((i - (-5)) / (5 - (-5))) * (100 - 1) + 1 ;
             //int position_j = ((j - (-5)) / (5 - (-5))) * (100 - 1) + 1 ;
@@ -157,35 +168,114 @@ void MyGLWidget::paintGL()
 //            }
 
             if(position_j>50){
-                C.draw(i,j, camera_value_z, 0.1);
+                C.draw(i,j, camera_value_z, 0.01);
             }
 
 
             if(position_j<=50){
-                if(position_i < 30 || position_i > 70) {
-                    C.draw(i,j, camera_value_z, 0.1);
+                if(position_i < 30 || position_i > 65) {
+                    C.draw(i,j, camera_value_z, 0.01);
                 }
             }
 
-            if(position_j>40 && position_j<=50){
-                qDebug() << "Voici les valeurs de i :" << position_i ;
-                // auriculaire
-                //if( (position_i > 35 && position_i < 40) || (position_i > 45 && position_i < 50) || (position_i > 55 && position_i < 60)) {
-                if (position_i > 35 && position_i < 40) {
-                    qDebug() << "on trace un doigts" ;
-                    C.draw(i,j, camera_value_z, 0.1);
+            // On fait un switch case pour tracer les doigts
+
+            switch (game_state) {
+                    case 1: // doigts
+                        //std::cout << "État 1" << std::endl;
+                        break;
+                    case 2: // doigts
+                        if(position_j>40 && position_j<=50){
+                            if (position_i >=30 && position_i < 60) {
+
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+
+                        }
+                        break;
+                    case 3: // 3 doigts
+                        if(position_j>40 && position_j<=50){
+                            if (position_i >= 30 && position_i < 50) {
+
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+
+                            if (position_i > 55 && position_i < 60) {
+
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+
+                        }
+                        break;
+                    case 4: // 4 doigts
+                        if(position_j>40 && position_j<=50){
+                            if (position_i >= 30 && position_i < 40) {
+                                //qDebug() << "on trace un doigts" ;
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+                            if (position_i > 45 && position_i < 50) {
+
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+
+                            if (position_i > 55 && position_i < 60) {
+
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+
+                        }
+                        break;
+
+                    case 5: // 5 doigts
+                        if(position_j>40 && position_j<=50){
+                            //qDebug() << "Voici les valeurs de i :" << position_i ;
+                            // auriculaire
+                            //if( (position_i > 35 && position_i < 40) || (position_i > 45 && position_i < 50) || (position_i > 55 && position_i < 60)) {
+                            if (position_i > 35 && position_i < 40) {
+                                //qDebug() << "on trace un doigts" ;
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+                            if (position_i > 45 && position_i < 50) {
+
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+
+                            if (position_i > 55 && position_i < 60) {
+
+                                C.draw(i,j, camera_value_z, 0.01);
+                            }
+
+                        }
+                        break;
+                    default:
+                        //std::cout << "État inconnu" << std::endl;
+                        break;
                 }
-                if (position_i > 45 && position_i < 50) {
 
-                    C.draw(i,j, camera_value_z, 0.1);
-                }
 
-                if (position_i > 55 && position_i < 60) {
 
-                    C.draw(i,j, camera_value_z, 0.1);
-                }
 
-            }
+
+            // Configuration tous les doigts initiale sauf pouce
+//            if(position_j>40 && position_j<=50){
+//                //qDebug() << "Voici les valeurs de i :" << position_i ;
+//                // auriculaire
+//                //if( (position_i > 35 && position_i < 40) || (position_i > 45 && position_i < 50) || (position_i > 55 && position_i < 60)) {
+//                if (position_i > 35 && position_i < 40) {
+//                    //qDebug() << "on trace un doigts" ;
+//                    C.draw(i,j, camera_value_z, 0.01);
+//                }
+//                if (position_i > 45 && position_i < 50) {
+
+//                    C.draw(i,j, camera_value_z, 0.01);
+//                }
+
+//                if (position_i > 55 && position_i < 60) {
+
+//                    C.draw(i,j, camera_value_z, 0.01);
+//                }
+
+//            }
 
 
 
